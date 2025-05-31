@@ -1,0 +1,50 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct {
+    int value;
+    int weight;
+    double ratio;
+} Item;
+
+int compare(const void *a, const void *b) {
+    double r1 = ((Item *)b)->ratio;
+    double r2 = ((Item *)a)->ratio;
+    return (r1 > r2) - (r1 < r2);
+}
+
+int main() {
+    int n;
+    double capacity;
+
+    printf("Enter number of items: ");
+    scanf("%d", &n);
+
+    printf("Enter knapsack capacity: ");
+    scanf("%lf", &capacity);
+
+    Item items[n];
+    printf("Enter value and weight for each item:\n");
+    for (int i = 0; i < n; i++) {
+        scanf("%d %d", &items[i].value, &items[i].weight);
+        items[i].ratio = (double)items[i].value / items[i].weight;
+    }
+
+    qsort(items, n, sizeof(Item), compare);
+
+    double totalValue = 0.0;
+
+    for (int i = 0; i < n && capacity > 0; i++) {
+        if (items[i].weight <= capacity) {
+            totalValue += items[i].value;
+            capacity -= items[i].weight;
+        } else {
+            totalValue += items[i].ratio * capacity;
+            capacity = 0;
+        }
+    }
+
+    printf("Maximum value in knapsack: %.2lf\n", totalValue);
+
+    return 0;
+}
