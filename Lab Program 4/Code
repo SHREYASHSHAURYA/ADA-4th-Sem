@@ -1,0 +1,74 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX 100
+
+int queue[MAX], front = -1, rear = -1;
+
+void enqueue(int v) {
+    if (rear == MAX - 1) return;
+    if (front == -1) front = 0;
+    queue[++rear] = v;
+}
+
+int dequeue() {
+    if (front == -1 || front > rear) return -1;
+    return queue[front++];
+}
+
+int isEmpty() {
+    return (front == -1 || front > rear);
+}
+
+int main() {
+    int n, e, i, j;
+    int graph[MAX][MAX] = {0};
+    int indegree[MAX] = {0};
+
+    printf("Enter number of vertices: ");
+    scanf("%d", &n);
+
+    printf("Enter number of edges: ");
+    scanf("%d", &e);
+
+    printf("Enter each edge as: from to\n");
+    for (i = 0; i < e; i++) {
+        int u, v;
+        scanf("%d %d", &u, &v);
+        graph[u][v] = 1;
+        indegree[v]++;
+    }
+
+    for (i = 0; i < n; i++) {
+        if (indegree[i] == 0)
+            enqueue(i);
+    }
+
+    int count = 0;
+    int topo_order[MAX];
+
+    while (!isEmpty()) {
+        int u = dequeue();
+        topo_order[count++] = u;
+
+        for (j = 0; j < n; j++) {
+            if (graph[u][j]) {
+                indegree[j]--;
+                if (indegree[j] == 0)
+                    enqueue(j);
+            }
+        }
+    }
+
+    if (count != n) {
+        printf("Cycle detected. Topological ordering not possible.\n");
+    } else {
+        printf("Topological ordering of the vertices:\n");
+        for (i = 0; i < count; i++) {
+            printf("%d ", topo_order[i]);
+        }
+        printf("\n");
+    }
+
+    return 0;
+}
